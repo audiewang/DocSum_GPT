@@ -1,0 +1,13 @@
+openai==0.28
+python-dotenv
+streamlit
+PyPDF2
+transformers
+torch
+requests
+beautifulsoup4
+langchain
+faiss-cpu
+langchain-community
+tiktoken
+git-lfs
