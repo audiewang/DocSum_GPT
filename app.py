@@ -16,7 +16,6 @@ import pickle
 load_dotenv()
 
 DEFAULT_OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-DEFAULT_API_KEY_PASSWORD = os.getenv('DEFAULT_API_KEY_PASSWORD')
 
 # Initialize the summarization model explicitly
 model_name = "sshleifer/distilbart-cnn-12-6"
@@ -79,8 +78,8 @@ def summarize_web_page(url):
     return summary
 
 # Function to get OpenAI response
-def get_openai_response(prompt, api_key, model="gpt-3.5-turbo", max_tokens=150, temperature=0.7):
-    openai.api_key = api_key
+def get_openai_response(prompt, model="gpt-3.5-turbo", max_tokens=150, temperature=0.7):
+    openai.api_key = DEFAULT_OPENAI_API_KEY
     response = openai.ChatCompletion.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
@@ -100,18 +99,6 @@ st.set_page_config(page_title="DocSum", page_icon="📝")
 
 st.title("DocSum: Document and Web Page Summarizer")
 st.sidebar.header("Options")
-
-# OpenAI API key and password protection
-api_key = ""
-if st.sidebar.checkbox("Use default API key"):
-    password = st.sidebar.text_input("Enter password", type="password")
-    if password == DEFAULT_API_KEY_PASSWORD:
-        api_key = DEFAULT_OPENAI_API_KEY
-        st.sidebar.success("Password correct. Using default API key.")
-    else:
-        st.sidebar.error("Incorrect password.")
-else:
-    api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
 # Chatbot configuration
 if 'messages' not in st.session_state:
@@ -193,7 +180,7 @@ if user_prompt := st.chat_input("What questions do you have?"):
 
         combined_prompt_with_context = f"{context}\n{combined_prompt}"
 
-        llm_response = get_openai_response(combined_prompt_with_context, api_key, model=model, max_tokens=max_token_length, temperature=temperature)
+        llm_response = get_openai_response(combined_prompt_with_context, model=model, max_tokens=max_token_length, temperature=temperature)
 
         st.session_state.messages.append({"role": "assistant", "content": llm_response})
         with st.chat_message("assistant"):
